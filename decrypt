@@ -1,0 +1,16 @@
+#!/bin/bash
+
+for gpg_file in "$@"
+do
+    if [[ -f "$gpg_file" && "$gpg_file" =~ .*\.gpg$ ]]; then 
+        gpg "$gpg_file" && rm "$gpg_file"
+        unencrypted_filename=${gpg_file%'.gpg'}
+        if [[ "$unencrypted_filename" =~ .*\.tar\.gz$ ]]; then
+           tar -xf "$unencrypted_filename" && rm "$unencrypted_filename"
+           #unencrypted_filename=${unencrypted_filename%'.tar.gz'}
+        fi
+
+    else 
+        printf "$gpg_file doesn't exist or it doesn't end with .gpg, ignoring file.\n"
+    fi
+done

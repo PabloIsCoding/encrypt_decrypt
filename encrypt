@@ -1,0 +1,14 @@
+#!/bin/bash
+
+for file_or_dir in "${@%/}" # The ${@%/} removes any trailing "/" from each file_or_dir
+do
+    if [[ -d "$file_or_dir" ]]; then
+        tar -cf "$file_or_dir"".tar.gz" "$file_or_dir" && \
+            gpg -c --no-symkey-cache "$file_or_dir"".tar.gz" && \
+            rm -rf "$file_or_dir" 
+        rm "$file_or_dir"".tar.gz" # This is a separate cleanup for the case where gpg fails but tar -cf didn't fail
+
+    elif [[ -f "$file_or_dir" ]]; then
+        gpg -c --no-symkey-cache "$file_or_dir" && rm "$file_or_dir"
+    fi
+done
